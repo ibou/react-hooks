@@ -3,8 +3,7 @@ import { useFetch } from './hooks';
 
 const Stories = () => {
 
-    const stories = useFetch('https://news-proxy-server.appspot.com/topstories', []);
-    console.log('===stories===',stories); 
+    const stories = useFetch('https://news-proxy-server.appspot.com/topstories', []); 
     return (
         <div className="Stories">
             <h3>Stories</h3>

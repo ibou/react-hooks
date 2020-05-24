@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import './App.css';
 import Joke from './Joke';
 import Stories from './Stories';
+import Tasks from './Tasks';
 
 
- function App(){
+function App() {
 
 
   const [userQuery, setUserQuery] = useState();
@@ -35,7 +36,10 @@ import Stories from './Stories';
 
         <button onClick={searchQuery}>Search</button>
         <hr />
+        <Tasks />
+        <hr />
         <Joke />
+
         <hr />
         <Stories />
       </div>
