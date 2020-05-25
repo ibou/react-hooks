@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { v4 as uuidv4 } from 'uuid';;
 
 const TASKS_STORAGE_KEY = 'TASKS_STORAGE_KEY';
@@ -9,20 +9,62 @@ const storeTasks = (tasksMap) => {
         JSON.stringify(tasksMap)
     );
 }
+const initialTasksState = { tasks: [], completedTasks: [] };
 
 const readStoredTasks = () => {
     const tasksMap = JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY));
-    return tasksMap ? tasksMap : { tasks: [], completedTasks: [] };
+    return tasksMap ? tasksMap : initialTasksState;
 }
+
+const TYPES = {
+    ADD_TASK: 'ADD_TASK',
+    COMPLETE_TASK: 'COMPLETE_TASK',
+    DELETE_TASK: 'DELETE_TASK'
+};
+const tasksReducer = (state, action) => {  
+
+    console.log('state.. ', state, 'action', action );
+    switch (action.type) {
+        case TYPES.ADD_TASK:
+            return {
+                ...state,
+                tasks: [...state.tasks, action.task]
+            };
+
+        case TYPES.COMPLETE_TASK:
+            const { completedTask } = action;
+            return {
+                ...state,
+                completedTasks: [...state.completedTasks, completedTask],
+                tasks: state.tasks.filter(t=>t.id !== completedTask.id)
+            };
+        case TYPES.DELETE_TASK:
+            const { deletedTask } = action;
+            return {
+                ...state, 
+                completedTasks: state.completedTasks.filter(t=>t.id !== deletedTask.id)
+            };
+
+        default:
+            return state;
+    }
+
+};
+
 const Tasks = () => {
     const [taskText, setTaskText] = useState('');
-    const storedTasks = readStoredTasks();
-    const [tasks, setTasks] = useState(storedTasks.tasks);
-    const [completedTasks, setCompletedTasks] = useState(storedTasks.completedTasks);
+    const storedTasks = readStoredTasks(); 
+
+    const [state, dispatch] = useReducer(tasksReducer, storedTasks);
+    const {tasks, completedTasks} = state;
+
+
+
 
     useEffect(() => {
+        const { tasks, completedTasks } = state;
         storeTasks({ tasks, completedTasks });
-    }, [tasks, completedTasks]);
+    } );
 
     const handleKeyPressed = event => {
         if (event.key === 'Enter') {
@@ -33,14 +75,14 @@ const Tasks = () => {
         setTaskText(event.target.value);
     };
     const addTask = () => {
-        setTasks([...tasks, { taskText, id: uuidv4() }]);
+        dispatch({ type: TYPES.ADD_TASK, task: { taskText, id: uuidv4() } });
     };
     const completeTask = completedTask => () => {
-        setCompletedTasks([...completedTasks, completedTask]);
-        setTasks(tasks.filter(task => task.id !== completedTask.id));
+        dispatch({ type: TYPES.COMPLETE_TASK, completedTask }); 
     }
-    const deleteTask = task => () => {
-        setCompletedTasks(completedTasks.filter(t => t.id !== task.id));
+    const deleteTask = deletedTask => () => {
+        // setCompletedTasks(completedTasks.filter(t => t.id !== task.id));
+        dispatch({ type: TYPES.DELETE_TASK, deletedTask }); 
     }
 
     return (
