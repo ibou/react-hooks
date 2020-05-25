@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useFetch } from './hooks';
 
 const Stories = () => {
 
-    const stories = useFetch('https://news-proxy-server.appspot.com/topstories', []); 
+    const stories = useFetch('https://news-proxy-server.appspot.com/topstories', []);
     return (
         <div className="Stories">
             <h3>Stories</h3>

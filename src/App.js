@@ -3,18 +3,20 @@ import './App.css';
 import Joke from './Joke';
 import Stories from './Stories';
 import Tasks from './Tasks';
+import Gallery from './Gallery';
 
 
 function App() {
 
 
   const [userQuery, setUserQuery] = useState();
+  const [showGallery, setShowGallery] = useState(true)
   const updateQuery = event => {
     setUserQuery(event.target.value);
   }
 
   const searchQuery = () => {
-    window.open(`https://www.google.com/search?q=${userQuery}`, '_blank')
+    console.log(userQuery);
   }
 
   const handleKeyPressed = event => {
@@ -22,6 +24,10 @@ function App() {
       searchQuery();
     }
 
+  }
+
+  const toggleShowGallery = () => {
+    setShowGallery(!showGallery);
   }
 
   return (
@@ -36,12 +42,20 @@ function App() {
 
         <button onClick={searchQuery}>Search</button>
         <hr />
+        <div>
+
+        {showGallery ? <Gallery /> : null}
+        <button onClick={toggleShowGallery}> {showGallery ? 'Hide' : 'Show'} Gallery</button>
+        </div>
+        <hr />
         <Tasks />
         <hr />
         <Joke />
 
         <hr />
         <Stories />
+
+
       </div>
     </div>
   );
